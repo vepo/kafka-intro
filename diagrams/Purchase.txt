@@ -1,0 +1,10 @@
+    Store                                      Cart                                      Payment                         Stock                          Order                        Logistic
+      |                                         |                                           |                              |                              |                               |
+      |    Finish (UserId, PaymentInfo)         |                                           |                              |                              |                               |
+      |---------------------------------------->|                                           |                              |                              |                               |
+      |                                         |         Purchase (CartId, Price)          |                              |                              |                               |
+      |                                         |------------------------------------------>|                              |                              |                               |
+      |                                         |                                           |       Purchase(CartID)       |       Purchase(CartID)       |                               |
+      |                                         |                                           |----------------------------->|----------------------------->|                               |
+      |                                         |                                           |                              |                              |          Send (OrderId)       |
+      |                                         |                                           |                              |                              |------------------------------>|
