@@ -1,4 +1,4 @@
-package io.vepo.bookstore.stockservice;
+package io.vepo.bookstore.cartservice;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

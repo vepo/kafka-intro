@@ -5,6 +5,13 @@ import static java.util.Objects.isNull;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Active Cart from logged user. This Cart should have an expiration timeout to
+ * release all products.
+ * 
+ * @author Victor Osório <victor.perticarrari@gmail.com>
+ *
+ */
 public class Cart {
 
     private Map<String, Integer> reserved = new HashMap<>();
@@ -16,18 +23,23 @@ public class Cart {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Cart other = (Cart) obj;
         if (reserved == null) {
-            if (other.reserved != null)
+            if (other.reserved != null) {
                 return false;
-        } else if (!reserved.equals(other.reserved))
+            }
+        } else if (!reserved.equals(other.reserved)) {
             return false;
+        }
         return true;
     }
 

@@ -6,44 +6,43 @@ import static java.util.UUID.randomUUID;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class StockManager {
-	public static final AtomicReference<StockManager> reference = new AtomicReference<>();
+    public static final AtomicReference<StockManager> reference = new AtomicReference<>();
 
-	public static StockManager instance() {
-		return reference.updateAndGet(ref -> {
-			if (isNull(ref)) {
-				return new StockManager();
-			}
-			return ref;
-		});
-	}
+    public static StockManager instance() {
+        return reference.updateAndGet(ref -> {
+            if (isNull(ref)) {
+                return new StockManager();
+            }
+            return ref;
+        });
+    }
 
-	private Map<String, Order> database;
+    private Map<String, PreOrder> database;
 
-	private StockManager() {
-		database = new HashMap<>();
-	}
+    private StockManager() {
+        database = new HashMap<>();
+    }
 
-	public Optional<Order> reserveItem(String cartId, String productId, int quantity) {
-		return Optional.of(database.compute(cartId, (__, order) -> {
-			if (Objects.isNull(order)) {
-				order = new Order(randomUUID().toString(), cartId, new ArrayList<>());
-			}
-			updateOrder(order, productId, quantity);
-			return order;
-		}));
-	}
+    public Optional<PreOrder> reserveItem(String cartId, String productId, int quantity) {
+        return Optional.of(database.compute(cartId, (__, order) -> {
+            if (isNull(order)) {
+                order = new PreOrder(randomUUID().toString(), cartId, new ArrayList<>());
+            }
+            updateOrder(order, productId, quantity);
+            return order;
+        }));
+    }
 
-	private void updateOrder(Order order, String productId, int quantity) {
-		order.items().stream().filter(item -> item.productId().equals(productId)).findFirst().ifPresentOrElse(item -> {
-			order.items().remove(item);
-			order.items().add(new OrderItem(productId, quantity + item.quantity()));
-		}, () -> order.items().add(new OrderItem(productId, quantity)));
+    private void updateOrder(PreOrder order, String productId, int quantity) {
+        order.orderItems().stream().filter(item -> item.productId().equals(productId)).findFirst().ifPresentOrElse(item -> {
+            order.orderItems().remove(item);
+            order.orderItems().add(new PreOrderItem(productId, quantity + item.quantity()));
+        }, () -> order.orderItems().add(new PreOrderItem(productId, quantity)));
 
-	}
+    }
 
 }

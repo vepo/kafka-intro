@@ -11,7 +11,7 @@ import javax.enterprise.context.ApplicationScoped;
  * This is my Database in memory. Don't bother me, this is for samples
  * applications. I will not use a database.
  * 
- * @author vepo
+ * @author Victor Osório <victor.perticarrari@gmail.com>
  *
  */
 @ApplicationScoped

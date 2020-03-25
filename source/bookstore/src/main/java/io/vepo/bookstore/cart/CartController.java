@@ -1,7 +1,8 @@
 package io.vepo.bookstore.cart;
 
+import static java.util.UUID.randomUUID;
+
 import java.util.Optional;
-import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -22,38 +23,40 @@ import io.vepo.bookstore.infra.MemoryDatabase;
 /**
  * Cart Controller. It should handle all Cart operations.
  * 
- * @author vepo
+ * @author Victor Osório <victor.perticarrari@gmail.com>
  */
 @Path("/cart")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class CartController {
-    private final Logger logger = LoggerFactory.getLogger(CartController.class);
+	private final Logger logger = LoggerFactory.getLogger(CartController.class);
 
-    // TODO: OK. This is a dumb memory database!
-    @Inject
-    MemoryDatabase database;
+	// TODO: This userId is hard coded, but in a product it should be read from JWT
+	private static String userId = randomUUID().toString();
 
-    // TODO: This usedId is hard coded, but in a product it should be read from JWT
-    private static String usedId = UUID.randomUUID().toString();
+	// TODO: OK. This is a dumb memory database!
+	@Inject
+	MemoryDatabase database;
 
-    @Inject
-    @Channel("reserve-product")
-    Emitter<ReserveProduct> addCartEmitter;
+	@Inject
+	@Channel("reserve-product")
+	Emitter<CartReserveProduct> addCartEmitter;
 
-    @PUT
-    @Path("/{productId}")
-    public Cart addProductToCart(@PathParam("productId") String productId, AddProductToCart body) {
-        logger.info("Adding product to cart! productId={} body={}", productId, body);
-        Optional<Cart> maybeCart = database.find(usedId, Cart.class);
-        if (!maybeCart.isPresent()) {
-            maybeCart = Optional.of(new Cart());
-            database.insert(usedId, maybeCart.get());
-        }
-        Cart cart = maybeCart.get();
-        cart.add(productId, body.getQuantity());
-        logger.info("Current cart! cart={}", cart);
-        addCartEmitter.send(KafkaRecord.of(usedId, ReserveProduct.from(body)));
-        return cart;
-    }
+	@PUT
+	@Path("/{productId}")
+	public Cart addProductToCart(@PathParam("productId") String productId, AddProductToCart body) {
+		logger.info("Adding product to cart! productId={} body={}", productId, body);
+		Optional<Cart> maybeCart = database.find(userId, Cart.class);
+		if (!maybeCart.isPresent()) {
+			maybeCart = Optional.of(new Cart());
+			database.insert(userId, maybeCart.get());
+		}
+		Cart cart = maybeCart.get();
+		cart.add(productId, body.getQuantity());
+		logger.info("Current cart! cart={}", cart);
+		CartReserveProduct event = CartReserveProduct.from(userId, body);
+		logger.info("Generating Start \n\nevent={}\n\n", event);
+		addCartEmitter.send(KafkaRecord.of(userId, event));
+		return cart;
+	}
 }

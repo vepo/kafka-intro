@@ -1,5 +1,12 @@
 package io.vepo.bookstore.cart;
 
+/**
+ * Message received from Frontend APP. Logged user has add a product to the
+ * active {@link Cart}.
+ * 
+ * @author Victor Osório <victor.perticarrari@gmail.com>
+ *
+ */
 public class AddProductToCart {
     private String productId;
     private int quantity;
