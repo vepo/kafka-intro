@@ -89,6 +89,8 @@ public class StockService implements AutoCloseable {
         var futures = new ArrayList<Future<?>>();
         futures.add(threadPool.submit(() -> KafkaFactory.instance().<String, StockItemReserve>startConsumer("stock.item.reserve.processor", Topics.STOCK_ITEM_RESERVE.topicName(), this::processItemReserveMessage)));
 
+        logger.info("Stock Service Started!!!!");
+
         futures.forEach(result -> {
             try {
                 result.get();

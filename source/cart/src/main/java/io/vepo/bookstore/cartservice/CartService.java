@@ -100,9 +100,12 @@ public class CartService implements AutoCloseable, Runnable {
 
     @Override
     public void run() {
-        asList(this.threadPool.submit(()-> KafkaFactory.instance().startConsumer(GROUP_ID_CART_RESERVE_PROCESSOR, Topics.CART_PRODUCT_RESERVE.topicName(), this::processCartReserveProduct)),
-               this.threadPool.submit(()-> KafkaFactory.instance().startConsumer(GROUP_ID_CART_RESERVED_PROCESSOR, Topics.STOCK_ITEM_RESERVED.topicName(), this::processStockItemReserved)))
-            .forEach(future-> {
+        var futures = asList(this.threadPool.submit(()-> KafkaFactory.instance().startConsumer(GROUP_ID_CART_RESERVE_PROCESSOR, Topics.CART_PRODUCT_RESERVE.topicName(), this::processCartReserveProduct)),
+                             this.threadPool.submit(()-> KafkaFactory.instance().startConsumer(GROUP_ID_CART_RESERVED_PROCESSOR, Topics.STOCK_ITEM_RESERVED.topicName(), this::processStockItemReserved)));
+
+        logger.info("Cart Service Started!!!!!");
+
+        futures.forEach(future-> {
                 try {
                     future.get();
                 } catch (InterruptedException | ExecutionException e) {
